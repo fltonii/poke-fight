@@ -5,9 +5,7 @@ import gql from "graphql-tag";
 
 const random1 = Math.floor(Math.random() * 151);
 const random2 = Math.floor(Math.random() * 151);
-const maior = random1 > random2 ? random1 : random2;
-
-
+const search = random1 > random2 ? random1 : random2;
 
 export const client = new ApolloClient({
   uri: "https://graphql-pokemon.now.sh/?"
@@ -17,7 +15,7 @@ export const PokeQuery = () => (
   <Query
     query={gql`
       {
-        pokemons(first: ${maior}) {
+        pokemons(first: ${search}) {
           name
           image
           maxCP
@@ -27,7 +25,7 @@ export const PokeQuery = () => (
   >
     {({ loading, error, data }) => {
       if (loading) return <p>Loading...</p>;
-      if (error) return <p>Erro{console.log(error)}</p>;
+      if (error) return <p>Error{console.log(error)}</p>;
 
       const poke1 = data.pokemons[random1 - 1];
       const poke2 = data.pokemons[random2 - 1];
@@ -46,12 +44,12 @@ export const PokeQuery = () => (
           </div>
           <div style={{ width: "100%", float: "left" }}>
             <form>
-              <button>Outra</button>
+              <button>Another</button>
             </form>
             <p style={{ fontSize: 20, fontFamily: "arial" }}>
               {poke1.maxCP > poke2.maxCP
-                ? `Vencedor: ${poke1.name}`
-                : `Vencedor: ${poke2.name}`}
+                ? `Winner: ${poke1.name}`
+                : `Winner: ${poke2.name}`}
             </p>
           </div>
         </div>
