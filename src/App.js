@@ -1,26 +1,51 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import ApolloClient from "apollo-boost";
+import { ApolloProvider, Query } from "react-apollo";
+import gql from "graphql-tag";
 
-function App() {
+const random = Math.floor(Math.random() * 151);
+
+const client = new ApolloClient({
+  uri: "https://graphql-pokemon.now.sh/?"
+});
+
+const PokeQuery = () => (
+  <Query
+    query={gql`
+      {
+        pokemons(first: ${random}) {
+          name
+          image
+        }
+      }
+    `}
+  >
+    {({ loading, error, data }) => {
+      if (loading) return <p>Loading...</p>;
+      if (error) return <p>Erro{console.log(error)}</p>;
+
+      const poke = data.pokemons[random - 1];
+
+      return (
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontSize: 30, fontFamily: "arial" }}>{poke.name}</p>
+          <img src={poke.image} alt={poke.name} style={{ marginTop: 20 }} />
+          <br />
+          <form>
+            <button style={{ marginTop: 50 }}>Outro</button>
+          </form>
+        </div>
+      );
+    }}
+  </Query>
+);
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ApolloProvider client={client}>
+      <PokeQuery />
+    </ApolloProvider>
   );
-}
+};
 
 export default App;
