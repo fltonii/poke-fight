@@ -1,4 +1,6 @@
 import React from "react";
+// styled-components/macro serve pra codar diretamente em
+// css dentro de jsx, sem precisar usar camelCase => { fontSize ==> font-size }
 import "styled-components/macro";
 
 export const Pokemon = ({ stats, attack, turn }) => {
@@ -34,6 +36,10 @@ export const Pokemon = ({ stats, attack, turn }) => {
             return (
               <button
                 onClick={() =>
+                  // todo: o damage ta nojentamente baixo, demora uma semana pra
+                  // matar alguem... tem q fazer algo pro damage variar dependendo 
+                  // do CP do pokemon... tipo, multiplica o baseDamage por uma 
+                  // constante que é cp/100 algo assim asudhasudh
                   attack(
                     Math.floor(Math.random() * atk.damage + atk.damage / 2)
                   )

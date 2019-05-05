@@ -4,16 +4,21 @@ import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import "styled-components/macro";
 
+// Tentei centralizar toda a logica de luta toda nesse componente
+
 const reducer = (state = { turn: true }, action) => {
   switch (action.type) {
     case "addFighters": {
       return { ...state, fighters: action.payload };
     }
     case "changeTurn": {
-      // turn true == player1, false == player2
+      // quando state.turn for true quem ataca é o player1 e vice-versa
       return { ...state, turn: !state.turn };
     }
     case "dealDamage": {
+      // quando a função attack é chamada ela vem para cá e manipula
+      // o hp do player inativo. (se turn for true, quem é atacado
+      // é o player 2 e vice-versa)
       let receiver;
       if (state.turn) {
         receiver = "player2";
@@ -41,11 +46,19 @@ const Fightpits = () => {
   // serve pra manipular estado local com maior complexidade
   const [state, dispatch] = useReducer(reducer, { players: [] });
 
+  // useEffect(() => {}, [state.fighters]);
+  // ↑  todo: implementar um effect que quando um dos players morre
+  // (hp == 0) o jogo, randomiza os players (ou mantem o player que
+  // ganhou aumenta cp/vida ?) e muda o score
+
   const randomizePlayer = pokemons => {
+    // cria um pokemon aleatorio
     const pokemon = pokemons[Math.floor(Math.random() * 151) - 1];
+    // randomiza o hp tendo no minimo metade do maxHP e no max maxHP
     const hp =
       Math.floor(Math.random() * (pokemon.maxHP - pokemon.maxHP / 2)) +
       pokemon.maxHP / 2;
+    // faz o msm com o CP
     const cp =
       Math.floor(Math.random() * (pokemon.maxCP - pokemon.maxHP / 2)) +
       pokemon.maxHP / 2;
@@ -56,6 +69,11 @@ const Fightpits = () => {
   const attack = damage => {
     dispatch({ type: "dealDamage", damage });
     dispatch({ type: "changeTurn" });
+    // troca o turn toda vez que ataca...
+    // esse metodo é meio frágil porque como o state é setado de forma asincrona
+    // o changeTurn pode finalizar antes do dealDamage, e pode acontecer do pokemon
+    // causar dano nele mesmo (n consegui reproduzir isso, mas em teoria
+    // pode acontecer asudhasudh)
   };
 
   return (
@@ -69,9 +87,12 @@ const Fightpits = () => {
           }
         });
       }}
+      // levar a query para /src/api.js
+      // aqui só tem que dizer:
+      // query={getPokemons} ou algo assim
       query={gql`
         {
-          pokemons(first: 807) {
+          pokemons(first: 151) {
             name
             image
             maxCP
@@ -104,6 +125,7 @@ const Fightpits = () => {
                   font-size: 2.5rem;
                 `}
               >
+                {/* todo: implementar Score (1 x 0 wins...) */}
                 Score:
               </h1>
             </aside>
